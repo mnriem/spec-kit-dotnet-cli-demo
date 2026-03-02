@@ -1,0 +1,114 @@
+name: Build and Test
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main]
+  release:
+    types: [published]
+
+env:
+  DOTNET_VERSION: '8.0.x'
+  DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
+  DOTNET_CLI_TELEMETRY_OPTOUT: true
+
+jobs:
+  build:
+    name: Build and Test
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: ${{ env.DOTNET_VERSION }}
+          
+      - name: Restore dependencies
+        run: dotnet restore TimezoneUtility.sln
+        
+      - name: Build
+        run: dotnet build TimezoneUtility.sln --configuration Release --no-restore
+        
+      - name: Test
+        run: dotnet test TimezoneUtility.sln --configuration Release --no-build --verbosity normal --collect:"XPlat Code Coverage"
+        
+      - name: Upload coverage
+        uses: codecov/codecov-action@v4
+        with:
+          fail_ci_if_error: false
+
+  publish:
+    name: Publish (${{ matrix.rid }})
+    needs: build
+    if: github.event_name == 'release'
+    runs-on: ${{ matrix.os }}
+    
+    strategy:
+      matrix:
+        include:
+          - os: windows-latest
+            rid: win-x64
+            artifact: tzutil.exe
+          - os: windows-latest
+            rid: win-arm64
+            artifact: tzutil.exe
+          - os: ubuntu-latest
+            rid: linux-x64
+            artifact: tzutil
+          - os: ubuntu-latest
+            rid: linux-arm64
+            artifact: tzutil
+          - os: macos-latest
+            rid: osx-x64
+            artifact: tzutil
+          - os: macos-latest
+            rid: osx-arm64
+            artifact: tzutil
+    
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: ${{ env.DOTNET_VERSION }}
+          
+      - name: Publish
+        run: |
+          dotnet publish src/TimezoneUtility/TimezoneUtility.csproj \
+            --configuration Release \
+            --runtime ${{ matrix.rid }} \
+            --output ./publish/${{ matrix.rid }} \
+            --self-contained true \
+            -p:PublishSingleFile=true \
+            -p:PublishReadyToRun=true \
+            -p:IncludeNativeLibrariesForSelfExtract=true
+            
+      - name: Create Archive (Unix)
+        if: runner.os != 'Windows'
+        run: |
+          cd ./publish/${{ matrix.rid }}
+          tar -czf ../tzutil-${{ matrix.rid }}.tar.gz ${{ matrix.artifact }}
+          
+      - name: Create Archive (Windows)
+        if: runner.os == 'Windows'
+        run: |
+          cd ./publish/${{ matrix.rid }}
+          Compress-Archive -Path ${{ matrix.artifact }} -DestinationPath ../tzutil-${{ matrix.rid }}.zip
+          
+      - name: Upload Release Asset (Unix)
+        if: runner.os != 'Windows'
+        uses: softprops/action-gh-release@v1
+        with:
+          files: ./publish/tzutil-${{ matrix.rid }}.tar.gz
+          
+      - name: Upload Release Asset (Windows)
+        if: runner.os == 'Windows'
+        uses: softprops/action-gh-release@v1
+        with:
+          files: ./publish/tzutil-${{ matrix.rid }}.zip

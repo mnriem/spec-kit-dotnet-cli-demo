@@ -1,0 +1,51 @@
+# Build outputs
+bin/
+obj/
+out/
+dist/
+publish/
+
+# .NET specific
+*.user
+*.userosscache
+*.suo
+*.cache
+*.userprefs
+project.lock.json
+*.nuget.props
+*.nuget.targets
+
+# NuGet
+*.nupkg
+**/[Pp]ackages/*
+!**/[Pp]ackages/build/
+
+# IDE
+.idea/
+*.swp
+*.sln.docstates
+.vs/
+
+# Test results
+TestResults/
+coverage/
+*.coverage
+*.coveragexml
+
+# OS files
+.DS_Store
+Thumbs.db
+*.tmp
+
+# Logs
+*.log
+logs/
+
+# Environment
+.env
+.env.*
+!.env.example
+local.settings.json
+
+# MSBuild
+*.binlog
