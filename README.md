@@ -20,10 +20,10 @@ uv tool install specify-cli --from git+https://github.com/github/spec-kit.git
 This was run in the project directory:
 
 ```bash
-specify init . --ai copilot
+specify init . --integration copilot --integration-options="--skills"
 ```
 
-This scaffolded the spec-kit structure and installed the Copilot custom agents.
+This scaffolded the spec-kit structure and installed the Copilot Spec Kit skills.
 
 ## Step 3 — Open in VS Code
 
@@ -31,31 +31,32 @@ This scaffolded the spec-kit structure and installed the Copilot custom agents.
 code .
 ```
 
-## Step 4 — How to select a spec-kit agent
+## Step 4 — How to invoke a spec-kit skill
 
-All spec-kit agents are available in the Copilot Chat **Agent** mode. Open Copilot Chat, click the **Agent** dropdown (top-left of the chat input), and select the agent you want to invoke.
+All spec-kit skills are available in Copilot Chat as slash commands. Open Copilot Chat and type `/` followed by the skill name (for example `/speckit-plan`) to invoke it.
 
 ![Selecting a spec-kit agent in VS Code Copilot Chat](vscode-custom-agent.jpg)
 
-The agents available are:
+The skills available are:
 
-| Agent | Purpose |
+| Skill | Purpose |
 |---|---|
-| `speckit.constitution` | Define project-wide principles and governance |
-| `speckit.specify` | Generate a feature specification from a description |
-| `speckit.clarify` | Ask targeted questions to tighten an existing spec |
-| `speckit.plan` | Produce a technical design and implementation plan |
-| `speckit.analyze` | Check consistency across spec, plan, and tasks |
-| `speckit.tasks` | Generate a dependency-ordered task list |
-| `speckit.checklist` | Produce a custom quality checklist |
-| `speckit.implement` | Execute tasks from `tasks.md` |
-| `speckit.taskstoissues` | Convert tasks into GitHub Issues |
+| `/speckit-constitution` | Define project-wide principles and governance |
+| `/speckit-specify` | Generate a feature specification from a description |
+| `/speckit-clarify` | Ask targeted questions to tighten an existing spec |
+| `/speckit-plan` | Produce a technical design and implementation plan |
+| `/speckit-analyze` | Check consistency across spec, plan, and tasks |
+| `/speckit-tasks` | Generate a dependency-ordered task list |
+| `/speckit-checklist` | Produce a custom quality checklist |
+| `/speckit-implement` | Execute tasks from `tasks.md` |
+| `/speckit-converge` | Assess the codebase and append remaining work as tasks |
+| `/speckit-taskstoissues` | Convert tasks into GitHub Issues |
 
 ---
 
 ## Step 5 — Establish project principles
 
-The **`speckit.constitution`** agent was invoked with:
+The **`/speckit-constitution`** skill was invoked with:
 
 ```
 Create principles focused on code quality, testing standards, user experience
@@ -69,7 +70,7 @@ This created `.specify/memory/constitution.md`, which all subsequent agents resp
 
 ## Step 6 — Write the feature specification
 
-The **`speckit.specify`** agent was invoked with:
+The **`/speckit-specify`** skill was invoked with:
 
 ```
 Create a command utility that I can use to determine the current date and time
@@ -80,13 +81,13 @@ that would be relevant to be able to schedule meetings across timezones easily.
 
 This created `specs/<feature>/spec.md`.
 
-> **Optional:** **`speckit.clarify`** can be run after this step to ask up to 5 targeted questions and encode the answers back into the spec before moving on.
+> **Optional:** **`/speckit-clarify`** can be run after this step to ask up to 5 targeted questions and encode the answers back into the spec before moving on.
 
 ---
 
 ## Step 7 — Create the implementation plan
 
-The **`speckit.plan`** agent was invoked with:
+The **`/speckit-plan`** skill was invoked with:
 
 ```
 Use .NET core for a single binary deployment and make sure we can generate it
@@ -99,7 +100,7 @@ This created `specs/<feature>/plan.md` with a technical design tailored to the s
 
 ## Step 8 — Generate the task list
 
-The **`speckit.tasks`** agent was invoked with:
+The **`/speckit-tasks`** skill was invoked with:
 
 ```
 Execute
@@ -107,15 +108,15 @@ Execute
 
 This created `specs/<feature>/tasks.md` with a dependency-ordered list of implementation tasks.
 
-> **Optional:** **`speckit.analyze`** can be run after this step to validate consistency across `spec.md`, `plan.md`, and `tasks.md` before writing any code.
+> **Optional:** **`/speckit-analyze`** can be run after this step to validate consistency across `spec.md`, `plan.md`, and `tasks.md` before writing any code.
 
-> **Optional:** **`speckit.checklist`** can be run to generate a custom quality checklist tailored to the feature.
+> **Optional:** **`/speckit-checklist`** can be run to generate a custom quality checklist tailored to the feature.
 
 ---
 
 ## Step 9 — Implement
 
-The **`speckit.implement`** agent was invoked with:
+The **`/speckit-implement`** skill was invoked with:
 
 ```
 Execute
@@ -123,11 +124,11 @@ Execute
 
 Large features are not always fully delivered in a single pass. For this project, three passes were needed:
 
-**Pass 1** — `speckit.implement` was run with `Execute`. The agent completed the majority of tasks.
+**Pass 1** — `/speckit-implement` was run with `Execute`. The agent completed the majority of tasks.
 
-**Pass 2** — `speckit.implement` was run again with `Execute`. The agent picked up the remaining incomplete tasks.
+**Pass 2** — `/speckit-implement` was run again with `Execute`. The agent picked up the remaining incomplete tasks.
 
-**Pass 3** — `speckit.implement` was run a final time with `Execute`. All tasks were complete.
+**Pass 3** — `/speckit-implement` was run a final time with `Execute`. All tasks were complete.
 
 The number of passes will vary per project depending on scope and complexity.
 
